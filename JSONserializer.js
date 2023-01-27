@@ -70,3 +70,32 @@ globalObject.JSONMap.set("`+ idJSON + `",` + idJSON + `);`;
   return JSON.parse(JSON.stringify(deserial));
 
 };
+
+globalObject.JSON.serialize = function(object1){
+
+const descriptors1 = Object.getOwnPropertyDescriptors(object1);
+
+
+// Expected output: true
+
+let desc = {};
+
+let props = Object.keys(descriptors1);
+
+for(let i=0;i<props.length;i++){
+  let newdesc={};
+  newdesc.value=object1[props[i]];
+  newdesc.writeable=true;
+  newdesc.configurable=true;
+  newdesc.enumerable=true;
+  
+desc[props[i]]=newdesc;
+
+
+}
+
+let out=Object.create(
+  Object.getPrototypeOf(descriptors1),desc
+);
+return JSON.stringify(out);
+};
