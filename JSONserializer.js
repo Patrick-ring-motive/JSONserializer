@@ -3,9 +3,7 @@ globalObject.globalObject = globalObject;
 
 globalObject.generateId = function(str) {
 
-
   return (str + new Date().getTime() + "" + performance.now()).replaceAll('.', '');
-
 
 };
 
@@ -21,8 +19,6 @@ globalObject.evalAsync = function(src) {
   });
 }
 
-
-
 globalObject.JSON.deserializeAsync = async function(str) {
   if (!globalObject.JSONMap) {
     globalObject.JSONMap = new Map();
@@ -31,14 +27,12 @@ globalObject.JSON.deserializeAsync = async function(str) {
 
   const scriptEval =
     `var ` + idJSON + `=` + str + `;                    
-globalObject.JSONMap.set("`+ idJSON + `",` + idJSON + `);`
-    ;
+globalObject.JSONMap.set("` + idJSON + `",` + idJSON + `);`;
 
   await evalAsync(scriptEval);
 
   let deserial = globalObject.JSONMap.get(idJSON);
   globalObject.JSONMap.delete(idJSON);
-
 
   return JSON.parse(JSON.stringify(deserial));
 
@@ -53,7 +47,7 @@ globalObject.JSON.deserialize = function(str) {
   const scriptEval =
 
     `var ` + idJSON + `=` + str + `;                    
-globalObject.JSONMap.set("`+ idJSON + `",` + idJSON + `);`;
+globalObject.JSONMap.set("` + idJSON + `",` + idJSON + `);`;
   try {
     eval?.(scriptEval);
   } catch (e) {
@@ -71,31 +65,29 @@ globalObject.JSONMap.set("`+ idJSON + `",` + idJSON + `);`;
 
 };
 
-globalObject.JSON.serialize = function(object1){
+globalObject.JSON.serialize = function(object1) {
 
-const descriptors1 = Object.getOwnPropertyDescriptors(object1);
+  const descriptors1 = Object.getOwnPropertyDescriptors(object1);
 
+  // Expected output: true
 
-// Expected output: true
+  let desc = {};
 
-let desc = {};
+  let props = Object.keys(descriptors1);
 
-let props = Object.keys(descriptors1);
+  for (let i = 0; i < props.length; i++) {
+    let newdesc = {};
+    newdesc.value = object1[props[i]];
+    newdesc.writeable = true;
+    newdesc.configurable = true;
+    newdesc.enumerable = true;
 
-for(let i=0;i<props.length;i++){
-  let newdesc={};
-  newdesc.value=object1[props[i]];
-  newdesc.writeable=true;
-  newdesc.configurable=true;
-  newdesc.enumerable=true;
-  
-desc[props[i]]=newdesc;
+    desc[props[i]] = newdesc;
 
+  }
 
-}
-
-let out=Object.create(
-  Object.getPrototypeOf(descriptors1),desc
-);
-return JSON.stringify(out);
+  let out = Object.create(
+    Object.getPrototypeOf(descriptors1), desc
+  );
+  return JSON.stringify(out);
 };
